@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Dustbin Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 min-h-screen">
+  <div class="flex flex-col md:flex-row h-screen">
+    <!-- Sidebar -->
+    <aside class="w-full md:w-64 bg-white shadow-md p-6 md:h-full">
+      <h2 class="text-2xl font-bold mb-6 text-green-600">F.L.W.A.S-Dustbin</h2>
+      <nav>
+        <ul class="space-y-4">
+          <li><a href="#" id="dashboard-tab" class="text-gray-700 hover:text-green-500">Dashboard</a></li>
+          <li><a href="#" id="reports-tab" class="text-gray-700 hover:text-green-500">Reports</a></li>
+          <li><a href="#" class="text-gray-700 hover:text-green-500">Settings</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-4 md:p-6 overflow-y-auto">
+      <div id="dashboard" class="">
+        <h1 class="text-2xl md:text-3xl font-bold mb-4 md:mb-6">Dashboard Overview</h1>
+        <div id="dustbinList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+          <!-- Dustbins will be inserted here dynamically -->
+        </div>
+      </div>
+
+      <div id="reports" class="hidden">
+        <h1 class="text-2xl md:text-3xl font-bold mb-4 md:mb-6">Reports</h1>
+        <ul id="reportList" class="space-y-4">
+          <!-- Reports will be inserted here dynamically -->
+        </ul>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const dustbins = [
+      {
+        id: 1,
+        fill: 10
+      },
+      {
+        id: 2,
+        fill: 90
+      },
+      {
+        id: 3,
+        fill: 68
+      }
+    ];
+
+    function renderDustbins() {
+      const container = document.getElementById("dustbinList");
+      container.innerHTML = "";
+
+      dustbins.forEach(dustbin => {
+        const card = document.createElement("div");
+        card.className = "bg-white p-4 rounded-2xl shadow-md relative";
+
+        const mapEmbed = `<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d248795.25248658806!2d79.69859889453129!3d13.008533399999997!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a528c9ebac84723%3A0x18e2bf88dfefa3ed!2sRajalakshmi%20Engineering%20College!5e0!3m2!1sen!2sin!4v1744810054103!5m2!1sen!2sin" width="100%" height="200" style="border:0; border-radius: 8px;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
+
+        const reportMessage = dustbin.fill >= 100 ? `<div class='absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full'>Full! Needs Immediate Attention</div>` : "";
+
+        card.innerHTML = `
+          ${reportMessage}
+          <h2 class="text-lg md:text-xl font-semibold mb-2 text-green-600">Dustbin ID: ${dustbin.id}</h2>
+          <div class="mb-2">
+            <div class="w-full bg-gray-200 rounded-full h-4">
+              <div class="bg-green-500 h-4 rounded-full" style="width: ${dustbin.fill}%"></div>
+            </div>
+            <p class="text-sm mt-1">Filled: ${dustbin.fill.toFixed(0)}%</p>
+          </div>
+          ${mapEmbed}
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    function renderReports() {
+      const reportList = document.getElementById("reportList");
+      reportList.innerHTML = "";
+
+      dustbins.forEach(dustbin => {
+        if (dustbin.fill >= 100) {
+          const reportItem = document.createElement("li");
+          reportItem.className = "bg-red-100 text-red-700 px-4 py-2 rounded-md shadow";
+          reportItem.textContent = `Alert: Dustbin ID ${dustbin.id} is full and needs immediate attention.`;
+          reportList.appendChild(reportItem);
+        }
+      });
+    }
+
+    document.getElementById("dashboard-tab").addEventListener("click", () => {
+      document.getElementById("dashboard").classList.remove("hidden");
+      document.getElementById("reports").classList.add("hidden");
+    });
+
+    document.getElementById("reports-tab").addEventListener("click", () => {
+      document.getElementById("dashboard").classList.add("hidden");
+      document.getElementById("reports").classList.remove("hidden");
+      renderReports();
+    });
+
+    renderDustbins();
+
+    setInterval(() => {
+      dustbins.forEach(bin => {
+        bin.fill = Math.min(100, Math.max(0, bin.fill + (Math.random() * 10 - 5)));
+      });
+      renderDustbins();
+    }, 10000);
+  </script>
+</body>
+
+</html>
